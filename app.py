@@ -1,24 +1,34 @@
 from flask import Flask, jsonify, request
+from preprocess.preprocess_service import PreprocessorService
 
 app = Flask(__name__)
 
+# 서비스 클래스 인스턴스 생성
+preprocessor_service = PreprocessorService()
 
-# Mock endpoint for normalize
+
 @app.route("/preprocess/normalize", methods=["POST"])
 def mock_normalize():
-    # 클라이언트로부터 받은 요청 데이터를 처리하여 출력 형식을 맞춥니다.
     input_data = request.json
-    normalized_signal = input_data.get("signal", [])  # 입력의 "signal" 값을 그대로 사용
+    signal = input_data.get("signal", [])
+
+    # 서비스 클래스의 normalize 메서드 호출
+    normalized_signal = preprocessor_service.normalize(signal)
+
     response_data = {"normalized_signal": normalized_signal}
     return jsonify(response_data)
 
 
-# Mock endpoint for filter
 @app.route("/preprocess/filter", methods=["POST"])
 def mock_filter():
-    # 클라이언트로부터 받은 요청 데이터를 처리하여 출력 형식을 맞춥니다.
     input_data = request.json
-    filtered_signal = input_data.get("signal", [])  # 입력의 "signal" 값을 그대로 사용
+    signal = input_data.get("signal", [])
+    filter_type = input_data.get("filter_type", "lowpass")
+    cutoff_frequency = input_data.get("cutoff_frequency", 2.0)
+
+    # 서비스 클래스의 filter 메서드 호출
+    filtered_signal = preprocessor_service.filter(signal, filter_type, cutoff_frequency)
+
     response_data = {"filtered_signal": filtered_signal}
     return jsonify(response_data)
 
