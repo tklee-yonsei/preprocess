@@ -1,0 +1,16 @@
+{
+	"name": "API Server Dev - Preprocess",
+	"build": {
+        "dockerfile": "../Dockerfile.dev",
+        "context": ".."
+    },
+    "runArgs": [
+        "--init",
+        "--rm",
+        "-v",
+        "${localWorkspaceFolder}:/app",
+        "-p",
+        "5001:5001"
+    ],
+    "workspaceFolder": "/app"
+}
