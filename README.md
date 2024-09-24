@@ -1,16 +1,16 @@
-# Team 1 - Preprocessing API Documentation
+# 팀 1 - 채널 코딩 API 문서
 
-This document provides an overview of the preprocessing APIs developed by Team 1. 
-The preprocessing server handles signal normalization and filtering tasks. 
-The APIs are available for both real and mock endpoints.
+채널 코딩을 위한 API 문서입니다/
 
-## API Endpoints
+## API 엔드포인트
 
-### 1. Normalize Signal
+### 1. 인코딩
 
-- **URL**: `/preprocess/normalize`
+- **URL**: `/encode/<method>`
+- **Parameters**: 
+  - `<method>`: `pass`, `hamming`, `repetition`
 - **Method**: `POST`
-- **Description**: Normalizes the given signal data.
+- **Description**: 신호를 인코딩 후, 인코딩된 신호를 돌려줍니다.
 
 #### Request
 
@@ -18,7 +18,7 @@ The APIs are available for both real and mock endpoints.
 - **Body**:
     ```json
     {
-        "signal": [1, 2, 3, 4, 5]
+        "data_bits": "11010011"
     }
     ```
 
@@ -28,15 +28,17 @@ The APIs are available for both real and mock endpoints.
 - **Body**:
     ```json
     {
-        "normalized_signal": [0.2, 0.4, 0.6, 0.8, 1.0]
+        "coded_bits": "11010011"
     }
     ```
 
-### 2. Filter Signal
+### 2. 디코딩
 
-- **URL**: `/preprocess/filter`
+- **URL**: `/decode/<method>`
+- **Parameters**: 
+  - `<method>`: `pass`, `hamming`, `repetition`
 - **Method**: `POST`
-- **Description**: Applies a filter to the given signal data based on the specified filter type and cutoff frequency.
+- **Description**: 신호를 인코딩 후, 인코딩된 신호를 돌려줍니다.
 
 #### Request
 
@@ -44,9 +46,7 @@ The APIs are available for both real and mock endpoints.
 - **Body**:
     ```json
     {
-        "signal": [1, 2, 3, 4, 5],
-        "filter_type": "lowpass",
-        "cutoff_frequency": 2.0
+        "coded_bits": "11010011"
     }
     ```
 
@@ -56,45 +56,59 @@ The APIs are available for both real and mock endpoints.
 - **Body**:
     ```json
     {
-        "filtered_signal": [1, 2]
+        "decoded_bits": "11010011"
     }
     ```
 
-## Getting Started
+## 에러
 
-This section provides instructions on how to set up and run the preprocessing server in different environments.
+- **1001**: Invalid modulation/demodulation method
+- **1002**: Missing bits data
+- **1003**: Invalid bits format
+- **1004**: Missing symbols data
+- **1005**: Invalid symbols data format
+- **1006**: Invalid action (WebSocket 전용)
 
-### Local Development
+## 시작하기
 
-To run the preprocessing server in a local development environment, ensure you have Docker installed and use the provided Dockerfile to build and run the server.
+이 섹션에서는 다양한 환경에서 전처리 서버를 설정하고, 
+실행하는 방법에 대한 지침을 제공합니다.
 
-1. **Build the Docker image**:
+### 로컬 개발
+
+로컬 개발 환경에서 전처리 서버를 실행하려면, 
+Docker가 설치되어 있는지 확인하고, 
+제공된 Dockerfile을 사용하여 서버를 빌드하고 실행하세요.
+
+1. **Docker 이미지 빌드**:
     ```bash
     docker build -f Dockerfile.dev -t dev-python-server .
     ```
 
-2. **Run the Docker container**:
+2. **Docker 컨테이너 실행**:
     ```bash
     docker run -p 5001:5001 -v $(pwd):/app --rm --name container__dev-python-server dev-python-server
     ```
 
-The server will be available on `http://localhost:5001`.
+서버는 `http://localhost:5001`에서 사용할 수 있습니다.
 
 ### mock
 
-To run the preprocessing server in a mock environment, ensure you have Docker installed and use the provided Dockerfile to build and run the server.
+mock 환경에서 전처리 서버를 실행하려면, 
+Docker가 설치되어 있는지 확인하고, 
+제공된 Dockerfile을 사용하여 서버를 빌드하고 실행하세요.
 
-1. **Build the Docker image**:
+1. **Docker 이미지 빌드**:
     ```bash
     docker build -f Dockerfile.mock -t mock-server .
     ```
 
-2. **Run the Docker container**:
+2. **Docker 컨테이너 실행**:
     ```bash
-    docker run -p 6001:6001 --rm --name container__mock-server mock-server
+    docker run -p 6002:6002 --rm --name container__mock-server mock-server
     ```
 
-The server will be available on `http://localhost:6001`.
+서버는 `http://localhost:6002`에서 사용할 수 있습니다.
 
 
 ### k8s

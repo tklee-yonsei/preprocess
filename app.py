@@ -1,38 +1,54 @@
 from flask import Flask, jsonify, request
-from preprocess.preprocess_service import PreprocessorService
+
+from coder.hamming_coder import HammingCoder
+from coder.pass_through_coder import PassThroughCoder
+from coder.repetition_coder import RepetitionCoder
 
 app = Flask(__name__)
 
-# 서비스 클래스 인스턴스 생성
-preprocessor_service = PreprocessorService()
+# 코딩 방법 매핑 - 인스턴스를 미리 생성하여 재사용
+coders = {
+    "pass": PassThroughCoder(),
+    "hamming": HammingCoder(),
+    "repetition": RepetitionCoder(),
+}
 
 
-@app.route("/preprocess/normalize", methods=["POST"])
-def mock_normalize():
-    input_data = request.json
-    signal = input_data.get("signal", [])
+@app.route("/encode/<method>", methods=["POST"])
+def encode(method):
+    coder = coders.get(method)
+    if coder is None:
+        return jsonify({"error_code": 2001, "error": "Invalid encoding method"}), 400
 
-    # 서비스 클래스의 normalize 메서드 호출
-    normalized_signal = preprocessor_service.normalize(signal)
+    data_bits = request.json.get("data_bits")
+    if data_bits is None:
+        return jsonify({"error_code": 2002, "error": "Missing data_bits"}), 400
 
-    response_data = {"normalized_signal": normalized_signal}
-    return jsonify(response_data)
+    try:
+        coded_bits = coder.encode(data_bits)
+    except ValueError as e:
+        return jsonify({"error_code": 2003, "error": str(e)}), 400
+
+    return jsonify({"coded_bits": coded_bits})
 
 
-@app.route("/preprocess/filter", methods=["POST"])
-def mock_filter():
-    input_data = request.json
-    signal = input_data.get("signal", [])
-    filter_type = input_data.get("filter_type", "lowpass")
-    cutoff_frequency = input_data.get("cutoff_frequency", 2.0)
+@app.route("/decode/<method>", methods=["POST"])
+def decode(method):
+    coder = coders.get(method)
+    if coder is None:
+        return jsonify({"error_code": 2001, "error": "Invalid decoding method"}), 400
 
-    # 서비스 클래스의 filter 메서드 호출
-    filtered_signal = preprocessor_service.filter(signal, filter_type, cutoff_frequency)
+    coded_bits = request.json.get("coded_bits")
+    if coded_bits is None:
+        return jsonify({"error_code": 2002, "error": "Missing coded_bits"}), 400
 
-    response_data = {"filtered_signal": filtered_signal}
-    return jsonify(response_data)
+    try:
+        decoded_bits = coder.decode(coded_bits)
+    except ValueError as e:
+        return jsonify({"error_code": 2003, "error": str(e)}), 400
+
+    return jsonify({"decoded_bits": decoded_bits})
 
 
 if __name__ == "__main__":
-    # Flask 서버 실행
-    app.run(host="0.0.0.0", port=5001)
+    app.run(port=5001)
