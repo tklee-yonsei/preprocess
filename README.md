@@ -105,10 +105,10 @@ Docker가 설치되어 있는지 확인하고,
 
 2. **Docker 컨테이너 실행**:
     ```bash
-    docker run -p 6002:6002 --rm --name container__mock-server mock-server
+    docker run -p 6001:6001 --rm --name container__mock-server mock-server
     ```
 
-서버는 `http://localhost:6002`에서 사용할 수 있습니다.
+서버는 `http://localhost:6001`에서 사용할 수 있습니다.
 
 
 ### k8s
