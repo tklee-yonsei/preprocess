@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 from coder.hamming_coder import HammingCoder
 from coder.pass_through_coder import PassThroughCoder
 from coder.repetition_coder import RepetitionCoder
+from coder.xor_coder import XORCoder
 
 app = Flask(__name__)
 
@@ -10,6 +11,7 @@ app = Flask(__name__)
 coders = {
     "pass": PassThroughCoder(),
     "hamming": HammingCoder(),
+    "xor": XORCoder(),
     "repetition": RepetitionCoder(),
 }
 
@@ -17,7 +19,7 @@ coders = {
 @app.route("/encode/<method>", methods=["POST"])
 def encode(method):
     coder = coders.get(method)
-    if coder is None:
+    if coder is None or method not in coders:
         return jsonify({"error_code": 2001, "error": "Invalid encoding method"}), 400
 
     data_bits = request.json.get("data_bits")
