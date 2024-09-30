@@ -10,7 +10,6 @@ class XORCoder(ChannelCoder):
         return self._xor_operation(data_bits)
 
     def decode(self, coded_bits):
-        coded_bits = [int(bit) for bit in coded_bits]
         return self._xor_operation(coded_bits)
 
     def _xor_operation(self, bits):

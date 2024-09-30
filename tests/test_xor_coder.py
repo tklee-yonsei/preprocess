@@ -20,7 +20,7 @@ class TestXORCoder(unittest.TestCase):
         주어진 데이터 비트를 키 "1010"과 XOR 연산하여 올바른 결과를 반환하는지 확인합니다.
         """
         data_bits = "1100"
-        expected_coded_bits = [1, 1, 1, 0]  # 키 "1010"과 XOR 연산 결과
+        expected_coded_bits = [0, 1, 1, 0]  # 키 "1010"과 XOR 연산 결과
         self.assertEqual(self.coder.encode(data_bits), expected_coded_bits)
 
     def test_decode(self):
@@ -28,7 +28,7 @@ class TestXORCoder(unittest.TestCase):
         디코딩 테스트:
         주어진 인코딩된 비트를 키 "1010"과 XOR 연산하여 원래 데이터 비트를 올바르게 복원하는지 확인합니다.
         """
-        coded_bits = [1, 1, 1, 0]  # 키 "1010"과 XOR 연산된 결과
+        coded_bits = [0, 1, 1, 0]  # 키 "1010"과 XOR 연산된 결과
         expected_data_bits = [1, 1, 0, 0]  # 원래 데이터 비트 "1100"
         self.assertEqual(self.coder.decode(coded_bits), expected_data_bits)
 
