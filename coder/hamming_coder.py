@@ -15,7 +15,8 @@ class HammingCoder(ChannelCoder):
                 block.extend([0] * (4 - len(block)))
             encoded_bits.extend(self._encode_block(block))
 
-        return encoded_bits
+        # 리스트를 문자열로 변환하여 반환
+        return ''.join(map(str, encoded_bits))  # 수정된 부분
 
     def _encode_block(self, data_bits):
         # 해밍(7,4) 코딩 구현
@@ -52,6 +53,9 @@ class HammingCoder(ChannelCoder):
 
     def _decode_block(self, coded_bits):
         # 해밍(7,4) 디코딩 구현
+
+        # 문자열을 정수로 변환
+        coded_bits = [int(bit) for bit in coded_bits]  # 수정된 부분
 
         # 패리티 비트 계산
         p1 = coded_bits[0] ^ coded_bits[2] ^ coded_bits[4] ^ coded_bits[6]
